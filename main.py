@@ -10,37 +10,39 @@ screen.tracer(0)
 
 player = Player()
 carManager = CarManager()
+scoreboard = Scoreboard()
 
 screen.listen()
 screen.onkey(player.up, "Up")
 
 game_is_on = True
-loop_iter = 5
-level = 0
+loop_iter = 0
 
 while game_is_on:
-    if level == 0:
+    if scoreboard.level == 0:
         carManager.generate_cars()
-        level = 1
+        scoreboard.increment_level()
 
     time.sleep(0.1)
-    carManager.move_all_cars(level)
+    carManager.move_all_cars(scoreboard.level)
 
     # Check for game over - collion with car
     for car in carManager.carList:
         if player.distance(car) < 20:
-            screen.bye()
+            scoreboard.game_over()
+            game_is_on = False
     # Check for game over - reached finished line
     if player.has_finished():
         # reset turtle
         player.move_to_start_pos()
 
         # increment level
-        level += 1
-
-    screen.update()
+        scoreboard.increment_level()
 
     loop_iter += 1
     if loop_iter == 6:
         carManager.create_car()
         loop_iter = 0
+
+    screen.update()
+screen.exitonclick()
